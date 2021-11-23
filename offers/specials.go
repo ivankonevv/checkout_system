@@ -2,6 +2,7 @@ package offers
 
 import (
 	"checkout_system/cart"
+
 	"github.com/sirupsen/logrus"
 )
 

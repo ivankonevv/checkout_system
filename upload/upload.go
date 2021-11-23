@@ -3,10 +3,11 @@ package upload
 import (
 	"checkout_system/models"
 	"encoding/json"
-	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
+
+	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 )
 
 type Products struct {

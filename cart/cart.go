@@ -3,7 +3,7 @@ package cart
 import (
 	"checkout_system/models"
 	"checkout_system/upload"
-	"fmt"
+	"github.com/sirupsen/logrus"
 )
 
 type ProductCart struct {
@@ -15,7 +15,8 @@ var AvailableProducts upload.Products
 func New() *ProductCart {
 	err := AvailableProducts.LoadProductPrices()
 	if err != nil {
-		fmt.Println("asd")
+		logrus.Error("an error occurred in LoadProductPrices():", err)
+		return nil
 	}
 	return new(ProductCart)
 }
@@ -58,9 +59,8 @@ func (c *ProductCart) UpdateOneItemPrice(sku string, price float32) {
 			if p.Price != 0 {
 				c.Products[i].Price = price
 				return
-			} else {
-				continue
 			}
+			continue
 		}
 	}
 	return
