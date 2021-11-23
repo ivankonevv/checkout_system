@@ -7,7 +7,7 @@ import (
 )
 
 type ProductCart struct {
-	Products []models.Product `json:"product"`
+	Products []models.Product `json:"products"`
 }
 
 var AvailableProducts upload.Products
