@@ -55,12 +55,9 @@ func (c *ProductCart) UpdateItemPrice(sku string, price float32) {
 
 func (c *ProductCart) UpdateOneItemPrice(sku string, price float32) {
 	for i, p := range c.Products {
-		if p.SKU == sku {
-			if p.Price != 0 {
-				c.Products[i].Price = price
-				return
-			}
-			continue
+		if p.SKU == sku && p.Price != 0 {
+			c.Products[i].Price = price
+			return
 		}
 	}
 	return
