@@ -54,7 +54,7 @@ func main() {
 	cart.LoadCatalog()
 	myShoppingCart := cart.New()
 
-	// Add 4 iPads to the cart
+	// Add 4 iPads to the cart.
 	myShoppingCart.Scan("ipd")
 	myShoppingCart.Scan("ipd")
 	myShoppingCart.Scan("ipd")
