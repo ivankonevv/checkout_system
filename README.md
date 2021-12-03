@@ -1,6 +1,6 @@
-#Checkout system
+# Checkout system
 
-##Installation:
+## Installation:
 ```
 $ git clone git@github.com:ivankonevv/checkout_system.git
 $ cd checkout_system
@@ -27,7 +27,7 @@ The script accepts JSON catalog as input in the following format:
 
 The script takes data from the catalog and puts the selected ones in the shopping cart. If one of the three special offers is valid for the selected products, the cost of the products calculating taking the special offer.
 
-###Available specials:
+### Available specials:
 -*3 for 2 deal on Apple TVs.*
 
 -*Price reduction to $499.99 for iPad Super if there are more than 4 in the cart.*
@@ -38,7 +38,7 @@ You can add items to the cart using the `Scan()` method:
 `myShoppingCart.Scan("ipd")`
 
 
-###Example:
+### Example:
 ```go
 package main
 
