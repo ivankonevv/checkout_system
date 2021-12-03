@@ -1,4 +1,4 @@
-package catalog
+package loader
 
 import (
 	"checkout_system/models"
@@ -13,7 +13,7 @@ func LoadPrices() (models.Products, error) {
 
 	productList, err := upload.ReadJSONCatalog()
 	if err != nil {
-		return models.Products{}, errors.Wrap(err, "cannot load catalog")
+		return models.Products{}, errors.Wrap(err, "cannot load loader")
 	}
 
 	for _, product := range productList {

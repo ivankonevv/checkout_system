@@ -1,7 +1,7 @@
 package cart
 
 import (
-	"checkout_system/catalog"
+	"checkout_system/loader"
 	"checkout_system/models"
 	"fmt"
 
@@ -15,7 +15,7 @@ type ProductCart struct {
 var AvailableProducts models.Products
 
 func LoadCatalog() {
-	products, err := catalog.LoadPrices()
+	products, err := loader.LoadPrices()
 	if err != nil {
 		logrus.Error("an error occurred in LoadPrices():", err)
 		return
@@ -31,19 +31,16 @@ func New() *ProductCart {
 
 func (c *ProductCart) Contains(sku string) bool {
 	_, ok := c.Products[sku]
-	if !ok {
-		return false
-	}
 
-	return true
+	return ok
 }
 
 func (c *ProductCart) Get(sku string) ProductCart {
-	products := make(map[string][]models.Product)
 	product, ok := c.Products[sku]
 	if !ok {
 		return ProductCart{}
 	}
+	products := make(map[string][]models.Product)
 	products[sku] = product
 
 	return ProductCart{Products: products}
@@ -55,7 +52,7 @@ func (c ProductCart) Len(sku string) int {
 }
 
 func (c *ProductCart) UpdateItemsPrice(sku string, price float32) {
-	for i, _ := range c.Products[sku] {
+	for i := range c.Products[sku] {
 		c.Products[sku][i] = models.Product{
 			SKU:   sku,
 			Name:  c.Products[sku][i].Name,
