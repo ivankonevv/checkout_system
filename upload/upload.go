@@ -10,23 +10,20 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type Products struct {
-	Products []models.Product `json:"products"`
-}
+func ReadJSONCatalog() ([]models.Product, error) {
 
-func (p *Products) LoadProductPrices() error {
 	log := logrus.New().WithField("function", "ReadProducts()")
 
 	inputFile, err := os.Open(os.Getenv("INPUT_FILENAME"))
 	if err != nil {
 		log.Error("invalid path: ", err)
-		return errors.Wrap(err, "failed to open input file.")
+		return nil, errors.Wrap(err, "failed to open input file.")
 	}
 
 	data, err := ioutil.ReadAll(inputFile)
 	if err != nil {
 		log.Error("cannot read input file: ", err)
-		return errors.Wrap(err, "failed to read input file.")
+		return nil, errors.Wrap(err, "failed to read input file.")
 	}
 
 	defer func(inputFile *os.File) {
@@ -36,13 +33,13 @@ func (p *Products) LoadProductPrices() error {
 		}
 	}(inputFile)
 
-	err = json.Unmarshal(data, &p)
+	var productList []models.Product
+	err = json.Unmarshal(data, &productList)
+
 	if err != nil {
 		log.Error("unmarshalling error: ", err)
-		return errors.Wrap(err, "failed to unmarshall input file.")
+		return nil, errors.Wrap(err, "failed to unmarshall input file.")
 	}
 
-	log.Infof("successfully read %d products", len(p.Products))
-
-	return nil
+	return productList, nil
 }

@@ -3,35 +3,39 @@ package main
 import (
 	"checkout_system/cart"
 	"checkout_system/offers"
-	"fmt"
+
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 )
 
 func init() {
-	log := logrus.New().WithField("function", "main()")
+	logrus.SetLevel(logrus.DebugLevel)
 	if err := godotenv.Load(".env"); err != nil {
-		log.Error("an error occurred while load env variables:", err)
+		logrus.Error("an error occurred while load env variables:", err)
 		return
 	}
+	return
 }
 
 func main() {
+	cart.LoadCatalog()
 	myShoppingCart := cart.New()
-	myShoppingCart.Add("ipd")
-	myShoppingCart.Add("ipd")
-	myShoppingCart.Add("ipd")
-	myShoppingCart.Add("ipd")
-	myShoppingCart.Add("ipd")
 
-	myShoppingCart.Add("atv")
-	myShoppingCart.Add("atv")
-	myShoppingCart.Add("atv")
+	myShoppingCart.Scan("ipd")
+	myShoppingCart.Scan("ipd")
+	myShoppingCart.Scan("ipd")
+	myShoppingCart.Scan("ipd")
+	myShoppingCart.Scan("ipd")
 
-	myShoppingCart.Add("mbp")
-	myShoppingCart.Add("mbp")
-	myShoppingCart.Add("vga")
-	myShoppingCart.Add("vga")
+	myShoppingCart.Scan("atv")
+	myShoppingCart.Scan("atv")
+	myShoppingCart.Scan("atv")
+
+	myShoppingCart.Scan("mbp")
+	myShoppingCart.Scan("mbp")
+
+	myShoppingCart.Scan("vga")
+	myShoppingCart.Scan("vga")
 
 	specialOffers := []func(productCart *cart.ProductCart) *cart.ProductCart{
 		offers.ApplyIpadPrice,
@@ -42,6 +46,6 @@ func main() {
 	for _, o := range specialOffers {
 		myShoppingCart = o(myShoppingCart)
 	}
-	fmt.Println(myShoppingCart.Total())
-	fmt.Println(myShoppingCart.Products)
+
+	myShoppingCart.Total()
 }

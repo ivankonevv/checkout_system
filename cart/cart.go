@@ -1,81 +1,109 @@
 package cart
 
 import (
+	"checkout_system/catalog"
 	"checkout_system/models"
-	"checkout_system/upload"
+	"fmt"
+
 	"github.com/sirupsen/logrus"
 )
 
 type ProductCart struct {
-	Products []models.Product `json:"products"`
+	Products map[string][]models.Product
 }
 
-var AvailableProducts upload.Products
+var AvailableProducts models.Products
+
+func LoadCatalog() {
+	products, err := catalog.LoadPrices()
+	if err != nil {
+		logrus.Error("an error occurred in LoadPrices():", err)
+		return
+	}
+	AvailableProducts = products
+
+	return
+}
 
 func New() *ProductCart {
-	err := AvailableProducts.LoadProductPrices()
-	if err != nil {
-		logrus.Error("an error occurred in LoadProductPrices():", err)
-		return nil
-	}
-	return new(ProductCart)
+	return &ProductCart{Products: make(map[string][]models.Product)}
 }
 
 func (c *ProductCart) Contains(sku string) bool {
-	for _, p := range c.Products {
-		if p.SKU == sku {
-			return true
-		}
+	_, ok := c.Products[sku]
+	if !ok {
+		return false
 	}
-	return false
+
+	return true
 }
 
 func (c *ProductCart) Get(sku string) ProductCart {
-	var data []models.Product
-	for _, p := range c.Products {
-		if p.SKU == sku {
-			data = append(data, p)
-		}
+	products := make(map[string][]models.Product)
+	product, ok := c.Products[sku]
+	if !ok {
+		return ProductCart{}
 	}
-	return ProductCart{Products: data}
+	products[sku] = product
+
+	return ProductCart{Products: products}
+
 }
 
-func (c ProductCart) Len() int {
-	return len(c.Products)
+func (c ProductCart) Len(sku string) int {
+	return len(c.Products[sku])
 }
 
-func (c *ProductCart) UpdateItemPrice(sku string, price float32) {
-	for i, p := range c.Products {
-		if p.SKU == sku {
-			c.Products[i].Price = price
+func (c *ProductCart) UpdateItemsPrice(sku string, price float32) {
+	for i, _ := range c.Products[sku] {
+		c.Products[sku][i] = models.Product{
+			SKU:   sku,
+			Name:  c.Products[sku][i].Name,
+			Price: price,
 		}
 	}
+
 	return
 }
 
 func (c *ProductCart) UpdateOneItemPrice(sku string, price float32) {
-	for i, p := range c.Products {
-		if p.SKU == sku && p.Price != 0 {
-			c.Products[i].Price = price
-			return
+	products := c.Products[sku]
+	for i, p := range products {
+		if p.Price == price {
+			continue
 		}
+		c.Products[sku][i] = models.Product{SKU: sku, Name: c.Products[sku][i].Name, Price: price}
+		return
 	}
+
 	return
 }
 
-func (c *ProductCart) Add(sku string) {
-	for _, p := range AvailableProducts.Products {
-		if p.SKU == sku {
-			c.Products = append(c.Products, p)
-		}
-	}
+func (c *ProductCart) Scan(sku string) {
+	c.Products[sku] = append(c.Products[sku], models.Product{
+		SKU:   sku,
+		Name:  AvailableProducts.Products[sku].Name,
+		Price: AvailableProducts.Products[sku].Price,
+	})
+
 	return
 }
 
 func (c *ProductCart) Total() float32 {
 	var totalAmount float32
-	for _, p := range c.Products {
-		totalAmount += p.Price
+	for sku, products := range c.Products {
+		var productAmount float32
+		for _, product := range products {
+			totalAmount += product.Price
+			productAmount += product.Price
+		}
+		logrus.WithFields(logrus.Fields{
+			"SKU":   sku,
+			"count": len(products),
+			"total": fmt.Sprintf("%.2f", productAmount),
+		}).Info(products[0].Name)
 	}
+	logrus.Infof("Total Amount: $%.2f", totalAmount)
+
 	return totalAmount
 }
