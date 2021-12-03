@@ -9,7 +9,7 @@ $ cd checkout_system
 You can simply run or build script using Makefile:
 `$ make run`, `$ make build`
 
-The script accepts JSON catalog as input in the following format:
+The script accepts JSON catalog file as input in the following format:
 ```
 [
   {
@@ -24,6 +24,8 @@ The script accepts JSON catalog as input in the following format:
   }
 ]
 ```
+*If you want to change your input file filename, you must change `INPUT_FILENAME` env variable.*
+
 
 The script takes data from the catalog and puts the selected ones in the shopping cart. If one of the three special offers is valid for the selected products, the cost of the products calculating taking the special offer.
 
